@@ -1,6 +1,6 @@
-`include "src/library/add_n.sv"
-`include "src/library/Sub_n.sv"
-`include "src/library/dff_n.sv"
+`include "ctmt/library/add_n.sv"
+`include "ctmt/library/Sub_n.sv"
+`include "ctmt/library/dff_n.sv"
 
 module alu_n#(parameter n=32) (operand0_i,operand1_i,alu_op_i,clk_i,alu_data_o,bru_exp_o);
 input logic[n-1:0] operand0_i,operand1_i;
