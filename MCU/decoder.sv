@@ -1,4 +1,4 @@
-`include "ctmt/library/dff_n.sv"
+
 module decoder#(parameter n=32) (instr_i,clk_i,rs1_addr_o,rs2_addr_o,rd_addr_o,imm_o,alu_op_o,rd_wr_o,operand_b_sel_o,is_pc_o,is_branch_o,is_jump_o,is_load_o,mem_wr_o);
     input  logic [n-1:0] instr_i;
     input  logic clk_i;
@@ -23,11 +23,18 @@ logic[4:0] opcode;
 	assign rd_addr_o = instr_i[11:7];	  //rd_addr
 	assign alu_op_o  = {instr_i[30], instr_i[14:12] };//alu_op
 
-//is_branch: B format
+// B format
 	assign is_branch=(opcode==24)? 1 : 0;
-//is jump: J format
-	assign is_jump  =(opcode==25 || opcode==27)? 1 : 0;
-	assign is_load  =(opcode==0 )?1:0;
-//is_pc:U format
-	logic is_u
+// J format
+	assign is_jump  =(opcode==27)? 1 : 0;// JAL
+// U format
+	logic is_u;
 	assign is_u =(opcode==13 || opcode==5)? 1 : 0;	
+// I format:cac lenh load,alu voi imm va JALR
+	assign is_load  =(opcode==0)?1:0; 	//is_load
+//is_pc
+	assign is_pc=is_u|is_jump|is_branch;
+//mem_wr_o:load,thanh ghi DMEM
+    assign mem_wr_o 
+	
+
