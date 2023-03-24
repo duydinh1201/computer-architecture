@@ -1,40 +1,75 @@
+`include "ctmt/library/dff_n.sv"
 
-module decoder#(parameter n=32) (instr_i,clk_i,rs1_addr_o,rs2_addr_o,rd_addr_o,imm_o,alu_op_o,rd_wr_o,operand_b_sel_o,is_pc_o,is_branch_o,is_jump_o,is_load_o,mem_wr_o);
+module decoder#(parameter n=32) (instr_i,clk_i,rs1_addr_o,rs2_addr_o,rd_addr_o,imm_o,alu_op_o,operand_b_sel_o,operand_a_sel_o,is_B_o,is_J_o,is_load_o,is_U_o,is_I_o,is_S_o,is_R_o);
     input  logic [n-1:0] instr_i;
     input  logic clk_i;
     output logic [4:0] rs1_addr_o;
     output logic [4:0] rs2_addr_o;
-    output logic [4:0] rd_addr_o;
-    output logic [n-1:0] imm_o;
-    output logic [3:0] alu_op_o;
-    output logic operand_b_sel_o;
-    output logic rd_wr_o;
-    output logic is_pc_o;
-    output logic is_branch_o;
-    output logic is_jump_o;
-    output logic is_load_o;
-    output logic mem_wr_o;
+    output logic [4:0] rd_addr_o; //dia chi rd
+    output logic [n-1:0] imm_o;   //gia tri imm
+    output logic [3:0] alu_op_o; //mac dinh lenh add
+    output logic operand_b_sel_o; //=0 chon r2
+    output logic operand_a_sel_o; //=0 chon r1
+    output logic is_B_o;  //=1 neu la B-format
+    output logic is_J_o;  //=1 neu la J-format
+    output logic is_load_o;//=1 neu la lenh load
+    output logic is_U_o;
+    output logic is_I_o;
+    output logic is_S_o;
+    output logic is_R_o;
 
 //...............................main...................................//
+//address
+always_comb begin:address
+	       rs1_addr_o= instr_i[19:15]; //rs1_addr
+		   rs2_addr_o= instr_i[24:20]; //rs2_addr
+		   rd_addr_o = instr_i[11:7];	  //rd_addr
+ 	end
+//opcode	
 logic[4:0] opcode;
-	assign opcode  = instr_i[6:2]; //opcode
-	assign rs1_addr_o= instr_i[19:15]; //rs1_addr
-	assign rs2_addr_o= instr_i[24:20]; //rs2_addr
-	assign rd_addr_o = instr_i[11:7];	  //rd_addr
-	assign alu_op_o  = {instr_i[30], instr_i[14:12] };//alu_op
+always_comb begin:Opcode
+	 opcode    = instr_i[6:2]; //opcode
+ 	 is_I_o    =(opcode==25||//jalr
+ 	 			 opcode==4 || //imm
+ 	 			 opcode==0  //load
+ 	 			 )?1:0;
+ 	 is_B_o	   =(opcode==24)?1:0;
+	 is_U_o    =(opcode==13||opcode==5)?1:0;
+	 is_S_o	   =(opcode==8)?1:0;
+     is_J_o	   =(opcode==27)?1:0;
+	 is_R_o	   =~(is_I_o|is_B_o|is_U_o|is_J_o|is_S_o);
+   end
+//imm
+	logic[n-1:0] imm_J,imm_B;
+	assign imm_B={20'b0,instr_i[7],instr_i[30:25],instr_i[11:8],1'b0};
+	assign imm_J={12'b0,instr_i[19:12],instr_i[20],instr_i[30:21],1'b0};
+always_comb begin:Imm
+	if(is_U_o) 	    imm_o=instr_i&32'hfffff000;
+	else if(is_J_o) 	imm_o=(instr_i[n-1])?imm_J|32'hfff00000:imm_J;
+	else if(is_I_o) 	imm_o={20'b0,instr_i[31:20]};
+	else if(is_B_o)	imm_o=(instr_i[n-1])?imm_B|32'hfffff000:imm_B;
+	else if(is_S_o)	imm_o={20'b0,instr_i[31:25],rd_addr_o};
+	else imm_o=0;
+end
+//alu_op
+	logic[3:0] alu_op;
+	logic I_imm;
+always_comb begin:Alu_op
+	 I_imm  = (is_I_o && ((instr_i[14:12] == 1) || (instr_i[14:12] == 5))) ? 1'b1 : 1'b0;//==0,I-format co dung gia tri imm	
+	 alu_op = {instr_i[30], instr_i[14:12]}; // ALU operation
+	 alu_op_o = (is_J_o|is_U_o)?0:(is_R_o|I_imm) ? alu_op : (alu_op & 4'b0111);	
+	end	
+//operand_a_sel_o
+	assign	operand_a_sel_o=is_U_o|is_J_o;//=0 chon rs1,=1 chon imm
+//operand_b_sel_o
+	assign   is_load_o=(opcode==0)?1:0;
+	assign  operand_b_sel_o=~(is_S_o|is_B_o|is_R_o|I_imm);//=0 chon rs2,=1 chon imm
+//test
+	logic I_imm_o;
+	dff_n#(1) i_imm_o(I_imm|I_imm_o,clk_i,I_imm_o);
+endmodule:decoder	 
+ 	 			 
+				
 
-// B format
-	assign is_branch=(opcode==24)? 1 : 0;
-// J format
-	assign is_jump  =(opcode==27)? 1 : 0;// JAL
-// U format
-	logic is_u;
-	assign is_u =(opcode==13 || opcode==5)? 1 : 0;	
-// I format:cac lenh load,alu voi imm va JALR
-	assign is_load  =(opcode==0)?1:0; 	//is_load
-//is_pc
-	assign is_pc=is_u|is_jump|is_branch;
-//mem_wr_o:load,thanh ghi DMEM
-    assign mem_wr_o 
 	
 
