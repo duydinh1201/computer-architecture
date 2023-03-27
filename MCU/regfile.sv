@@ -17,9 +17,10 @@ logic[n-1:0]        ena_addr,ena_addr_o;
 assign 	ena_addr=32'h80000000;
 always_comb begin
     // Assign rs_data_i to rd_data_i for each element
-    for (int i = 0; i < m; i++) begin
+    for (int i = 1; i < m; i++) begin
         rs_data_i[i] = rd_data_i;
     end
+    rs_data_i[0]=0;
     // Generate ena_addr_o
     ena_addr_o = ena_addr>>rd_addr_i;
 end
