@@ -1,4 +1,25 @@
 
+
+int counter = 0;
+int star_rd=0;
+int  ena_star=0;
+int a=0;
+#define MAX_SIM 50000
+void set_random(Vtop* dut, vluint64_t sim_unit) {
+int arr[1000];
+    if(counter%10000) a=a;
+    	else a=!a;
+	dut->st_en_i=a;
+	if(a) star_rd++;
+	if(star_rd>=1000) star_rd=0;
+	if(star_rd>=10) dut->addr_test=arr[star_rd-10];
+	arr[star_rd]=rand();
+	dut->addr_i=arr[star_rd];		
+	dut->st_data_i=rand();
+	counter++;
+	dut->rst_ni = (sim_unit % 10000 == 0) ? 0 : 1;
+}
+/*
 //brcomp
 #define MAX_SIM 50000
 int counter = 0;
@@ -163,7 +184,7 @@ int counter = 0;
 int value = 1;
 int position = 0;
 //char arr[81] = {"eb94f2c7d51e989940129ab5f49ffff001d3ae24b1822515151651561516516515545465ghjh25gh"};//80byte
-char hex_arr[]={"01000000c39aa0fa65b6c0f6bdae75dd5fe2b934d155235c01f0b6c1b55c664fe98ee8d33af57b65c7f5d74df2b944195d266450dc2309cc190e2dbc00000000f6eaa79f06f42942085a5d5b00000001"}; // chuỗi kí	 tự cần chuyển sang hex
+char hex_arr[]={"01000000c39aa0fa65b6c0f6bdae75dd5fe2b934d155235c01f0b6c1b55c664fe98ee8d33af57b65c7f5d74df2b944195d266450dc2309cc190e2dbc00000000f6eaa79f06f42942045a5d5b00000001"}; // chuỗi kí	 tự cần chuyển sang hex
 char hex[3]; // biến lưu giá trị hex tạm thời
 
 // chuyển từng bit theo chuẩn UART 10bit
@@ -192,7 +213,6 @@ void set_random(Vtop* dut, vluint64_t sim_unit) {
         counter = (counter + 1) % 10;
     }
     dut->Rx_i = value;
-    dut->rst_i = (sim_unit % 1000 == 0) ? 0 : 1;
 }
 /*
 #define MAX_SIM 5000000

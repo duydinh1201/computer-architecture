@@ -18,9 +18,5 @@ logic[n-1:0] data_odd_1[0:m/2-1],data_even_1[0:m/2-1];
 	mux32to1_n#(n) stage_1b(data_odd_1,sel[address-1:1],data_i1[1]);
 //tang sau
 	mux2to1_n#(n) stage_2(data_i1[0],data_i1[1],sel[0],data_o);
-/*
-//test don't care
-	logic test,test_o;
- 	assign test=0;
- 	dff_n#(1) Test(test|test_o,clk_i,test_o);*/
+
 endmodule:mux64to1_n
