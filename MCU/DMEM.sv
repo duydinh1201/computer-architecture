@@ -1,26 +1,27 @@
-`include "ctmt/library/mux32to1_n.sv"
+`include "ctmt/library/mux2048to1_n.sv"
+//`include "ctmt/library/mux4096to1_n.sv"
 `include "ctmt/library/dff_n_data.sv"
 `include "ctmt/library/dff_n.sv"
-module DMEM#(parameter n=32,address=5)
+module DMEM#(parameter n=8,address=11)
 (
-  input clk_i,
-  input rst_ni,
-  input [address-1:0] addr_i,//lay 12 bit dia chi 
-  input [n-1:0] st_data_i,
-  input st_en_i,
+  input logic clk_i,
+  input logic rst_ni,
+  input logic [address-1:0] addr_i,
+  input logic [address-1:0] addr_test,
+  input logic [n-1:0] st_data_i,
+  input logic st_en_i,
  // input [n-1:0] io_sw_i,
-  output reg [n-1:0] ld_data_o
+  output  logic [n-1:0] ld_data_o
  /* output reg [n-1:0] io_lcd_o,
   output reg [n-1:0] io_ledg_o,
   output reg [n-1:0] io_ledr_o,
   output reg [n-1:0] io_hex_o*/
 );
 // DMEM
-parameter x=8;//tu chon ngau nhien
-parameter m=3;//=log2(x)
-parameter y=2;//=log2(2**address/x)
-parameter z=4;//=2**address/x
-logic[n-1:0] ld_data_i[0:2**address-1],st_data_o[0:2**address-1];
+parameter x=64;//tu chon ngau nhien sao cho 2^address chia het cho x
+parameter m=6;//=log2(x)
+parameter z=32;//=2**address/x
+parameter y=5;//=log2(z)
 //decoder 12 bit dia chi tuong duong 
 logic ena_addr_o[0:2**address/x-1][0:x-1];
 logic[address-1:0] ena_addr;
@@ -42,6 +43,7 @@ end
 	    end
 	end
 //tao mang register
+logic[n-1:0] ld_data_i[0:2**address-1],st_data_o[0:2**address-1];
 genvar a, b;
 	generate
 	for (b = 0; b < z; b++) begin
@@ -51,7 +53,10 @@ genvar a, b;
 	 end
    endgenerate
 //encoder
-	mux32to1_n#(n) Encoder(ld_data_i,addr_i,ld_data_o);
+//	mux32to1_n#(n) Encoder(ld_data_i,addr_i,ld_data_o);
+	mux2048to1_n#(n) Encoder(ld_data_i,addr_test,ld_data_o);
+//	mux4096to1_n#(n) Encoder(ld_data_i,addr_test,ld_data_o);
+//	mux2048to1_n#(n) Encoder(ld_data_i,addr_i,ld_data_o);
 //not use
 logic notuse,notuse_o;
 	always_comb begin

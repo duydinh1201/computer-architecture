@@ -1,10 +1,12 @@
 `include "ctmt/library/mux2048to1_n.sv"
-module mux4096to1_n#(parameter n=4,address=12,m=4096)(
+module mux4096to1_n#(parameter n=4)(
 	input logic[n-1:0] data_i[0:m-1],
 //	input logic clk_i,
 	input logic [address-1:0] sel,	
 	output logic[n-1:0] data_o
 );
+parameter address=12;
+parameter m=2**address;
 logic[n-1:0] data_odd_1[0:m/2-1],data_even_1[0:m/2-1];
   always_comb begin
   	for(int i=0;i<m/2;i++) begin

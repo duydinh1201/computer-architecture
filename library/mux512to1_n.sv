@@ -1,10 +1,11 @@
 `include "ctmt/library/mux128to1_n.sv"
-module mux512to1_n#(parameter n=4,address=9,m=512)(
-	input logic[n-1:0] data_i[0:m-1],
+module mux512to1_n#(parameter n=4)(data_i,sel,data_o);
+	input logic[n-1:0] data_i[0:m-1];
 //	input logic clk_i,
-	input logic [address-1:0] sel,	
-	output logic[n-1:0] data_o
-);
+	input logic [address-1:0] sel;
+	output logic[n-1:0] data_o;
+parameter address=9;
+parameter m=2**address;
 logic[n-1:0] data_odd_1[0:m/2-1],data_even_1[0:m/2-1];
 logic[n-1:0] data_odd_1a[0:1][0:m/4-1],data_even_1a[0:1][0:m/4-1];
 logic[n-1:0] data_odd_2[0:m/8-1],data_even_2[0:m/8-1];
