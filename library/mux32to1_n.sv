@@ -1,44 +1,45 @@
-module mux32to1_n
-  #(parameter DATA_WIDTH = 32)
-  (input logic [DATA_WIDTH-1:0] data_in [31:0],
-   input logic [4:0] sel,
-   output logic [DATA_WIDTH-1:0] data_out);
-
+`include "ctmt/library/mux8to1_n.sv"
+module mux32to1_n#(parameter n=4,address=5,m=32)(
+	input logic[n-1:0] data_i[0:m-1],
+	//input logic clk_i,
+	input logic [address-1:0] sel,	
+	output logic[n-1:0] data_o
+);
+logic[n-1:0] data_odd_1[0:m/2-1],data_even_1[0:m/2-1];
+logic[n-1:0] data_odd_1a[0:1][0:m/4-1],data_even_1a[0:1][0:m/4-1];
+logic[n-1:0] data_odd_2[0:m/8-1],data_even_2[0:m/8-1];
   always_comb begin
-    case (sel)
-      5'b00000: data_out = data_in[0];
-      5'b00001: data_out = data_in[1];
-      5'b00010: data_out = data_in[2];
-      5'b00011: data_out = data_in[3];
-      5'b00100: data_out = data_in[4];
-      5'b00101: data_out = data_in[5];
-      5'b00110: data_out = data_in[6];
-      5'b00111: data_out = data_in[7];
-      5'b01000: data_out = data_in[8];
-      5'b01001: data_out = data_in[9];
-      5'b01010: data_out = data_in[10];
-      5'b01011: data_out = data_in[11];
-      5'b01100: data_out = data_in[12];
-      5'b01101: data_out = data_in[13];
-      5'b01110: data_out = data_in[14];
-      5'b01111: data_out = data_in[15];
-      5'b10000: data_out = data_in[16];
-      5'b10001: data_out = data_in[17];
-      5'b10010: data_out = data_in[18];
-      5'b10011: data_out = data_in[19];
-      5'b10100: data_out = data_in[20];
-      5'b10101: data_out = data_in[21];
-      5'b10110: data_out = data_in[22];
-      5'b10111: data_out = data_in[23];
-      5'b11000: data_out = data_in[24];
-      5'b11001: data_out = data_in[25];
-      5'b11010: data_out = data_in[26];
-      5'b11011: data_out = data_in[27];
-      5'b11100: data_out = data_in[28];
-      5'b11101: data_out = data_in[29];
-      5'b11110: data_out = data_in[30];
-      5'b11111: data_out = data_in[31];
-      default: data_out = 'bx; //unknown output
-    endcase
-  end
-endmodule
+  	for(int i=0;i<m/2;i++) begin
+	  	data_odd_1[i]=data_i[2*i+1];
+	  	data_even_1[i]=data_i[2*i];
+  	end
+  	for(int i=0;i<m/4;i++) begin
+	  	data_odd_1a[1][i]=data_odd_1[2*i+1];
+	  	data_even_1a[1][i]=data_odd_1[2*i];
+  	end
+  	for(int i=0;i<m/4;i++) begin
+	  	data_odd_1a[0][i]=data_even_1[2*i+1];
+	  	data_even_1a[0][i]=data_even_1[2*i];
+  	end
+  	for(int i=0;i<4;i++) begin
+	  	data_odd_2[i]=data_i1[2*i+1];
+	  	data_even_2[i]=data_i1[2*i];
+  	end
+  end 
+//tang dau
+	logic[n-1:0]	data_i1[0:3];
+	mux8to1_n#(n) stage_1a(data_even_1a[0],sel[address-1:2],data_i1[0]);
+	mux8to1_n#(n) stage_1b(data_odd_1a[0],sel[address-1:2],data_i1[1]);
+	mux8to1_n#(n) stage_1c(data_even_1a[1],sel[address-1:2],data_i1[2]);
+	mux8to1_n#(n) stage_1d(data_odd_1a[1],sel[address-1:2],data_i1[3]);
+//tang sau
+    logic[n-1:0]	data_i2[0:3];
+    assign data_i2[0:1]=data_even_2[0:1];
+    assign data_i2[2:3]=data_odd_2[0:1];
+	mux4to1_n#(n) stage_2(data_i2,sel[1:0],data_o);
+/*
+//test don't care
+	logic test,test_o;
+ 	assign test=0;
+ 	dff_n#(1) Test(test|test_o,clk_i,test_o);*/
+endmodule:mux32to1_n
