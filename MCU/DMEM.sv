@@ -34,8 +34,8 @@ always_comb begin
   	end
   end
    ena_addr_o[div[y-1:0]][ena_addr[m-1:0]]=1;
-//khoi tao gia tri store
 end
+//khoi tao gia tri store
 	always_comb begin
 	    for (int i = 1; i < 2**address; i++) begin
 	        st_data_o[i] = st_data_i;
