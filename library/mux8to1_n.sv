@@ -1,28 +1,30 @@
 `include "ctmt/library/mux4to1_n.sv"
 module mux8to1_n#(parameter n=4)(
-	input logic[n-1:0] data_i[0:m-1],
+	input logic[n-1:0] data_i[0:2**address-1],
 //	input logic clk_i,
 	input logic [address-1:0] sel,	
 	output logic[n-1:0] data_o
 );
 parameter address=3;
-parameter m=2**address;
-logic[n-1:0] data_odd_1[0:m/2-1],data_even_1[0:m/2-1];
+parameter m=4;//=2**address/2
+parameter gr=2;//=2**address/m
+parameter s=1;//=log2(gr)
+logic[n-1:0] data[0:gr-1][0:m-1];
   always_comb begin
-  	for(int i=0;i<m/2;i++) begin
-	  	data_odd_1[i]=data_i[2*i+1];
-	  	data_even_1[i]=data_i[2*i];
+  	for(int i=0;i<gr;i++) begin
+  	 for(int j=0;j<m;j++) begin
+	  	data[i][j]=data_i[i*m+j];
+	  end
   	end
   end 
 //tang dau
-	logic[n-1:0]	data_i1[0:3];
-	mux4to1_n#(n) stage_1a(data_even_1,sel[address-1:1],data_i1[0]);
-	mux4to1_n#(n) stage_1b(data_odd_1,sel[address-1:1],data_i1[1]);
+logic[n-1:0]	data_i1[0:1];
+genvar a;
+	generate
+	for (a = 0; a < gr; a++) begin
+		mux4to1_n#(n) stage_1a(data[a],sel[address-s-1:0],data_i1[a]);
+	   end
+   endgenerate
 //tang sau
-	mux2to1_n#(n) stage_2(data_i1[0],data_i1[1],sel[0],data_o);
-/*
-//test don't care
-	logic test,test_o;
- 	assign test=0;
- 	dff_n#(1) Test(test|test_o,clk_i,test_o);*/
+	mux2to1_n#(n) stage_2(data_i1[0],data_i1[1],sel[address-1:address-s],data_o);
 endmodule:mux8to1_n
