@@ -1,0 +1,45 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Sat Mar 25 16:46:36 2023
+[*]
+[dumpfile] "/mnt/d/WSL2/ex01/wave.fst"
+[dumpfile_mtime] "Sat Mar 25 16:39:53 2023"
+[dumpfile_size] 368739
+[savefile] "/mnt/d/WSL2/ex01/wave.gtkw"
+[timestart] 67
+[size] 1920 973
+[pos] -1 -1
+*-7.541504 483 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.top.
+[treeopen] TOP.top.dut.
+[sst_width] 297
+[signals_width] 222
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@24
+TOP.change_o[2:0]
+TOP.clk_i
+TOP.dime_i
+TOP.nickle_i
+TOP.quater_i
+TOP.rst_i
+TOP.soda_o
+TOP.top.dut.SUB.c_in[5:0]
+TOP.top.dut.SUB.c_o[5:0]
+TOP.top.dut.SUB.clk_i
+TOP.top.dut.SUB.data0_i[4:0]
+TOP.top.dut.SUB.data0_o[5:0]
+TOP.top.dut.SUB.data1_i[4:0]
+TOP.top.dut.SUB.data1_o[5:0]
+TOP.top.dut.SUB.data[5:0]
+TOP.top.dut.SUB.data_o[4:0]
+TOP.top.dut.SUB.n
+TOP.top.dut.SUB.over_o
+TOP.top.dut.SUB.sign_i
+@28
+TOP.top.dut.rst_o
+@29
+TOP.top.dut.fl_main_o
+[pattern_trace] 1
+[pattern_trace] 0

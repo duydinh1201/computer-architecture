@@ -1,5 +1,5 @@
 `include "ctmt/library/mux1024to1_n.sv"
-module mux2048to1_n#(parameter n=4)(
+module mux2048to1_n#(parameter n=32)(
 	input logic[n-1:0] data_i[0:2**address-1],
 //	input logic clk_i,
 	input logic [address-1:0] sel,	
