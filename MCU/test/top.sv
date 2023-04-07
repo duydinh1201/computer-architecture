@@ -1,3 +1,20 @@
+//lsu
+module top#(parameter n=32,address=12)(clk_i,rst_ni,addr_i,st_i,st_en_i,sw_i,ld_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o);
+  input logic clk_i;
+  input logic rst_ni;
+  input logic [address-1:0] addr_i;
+  input logic [n-1:0] st_i;
+  input logic st_en_i;
+  input logic[n-1:0] sw_i;
+  output  logic [n-1:0] ld_o;
+  output  logic [n-1:0] io_hex_o[0:7];
+  output  logic [n-1:0] io_ledr_o;
+  output  logic [n-1:0] io_ledg_o;
+  output  logic [n-1:0] io_lcd_o;
+lsu#(n,address) dut(clk_i,rst_ni,addr_i,st_i,st_en_i,sw_i,ld_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o);
+endmodule:top	 
+
+/*
 //dmem
 module top#(parameter n=32,address=11)
 (
@@ -9,11 +26,7 @@ module top#(parameter n=32,address=11)
   input logic st_en_i,
  // input [n-1:0] io_sw_i,
   output  logic [n-1:0] ld_data_o
- /* output reg [n-1:0] io_lcd_o,
-  output reg [n-1:0] io_ledg_o,
-  output reg [n-1:0] io_ledr_o,
-  output reg [n-1:0] io_hex_o*/
-);
+]);
 DMEM#(n,address)  dut(clk_i,rst_ni,addr_i,st_data_i,st_en_i,ld_data_o);
 endmodule:top	 
 

@@ -13,12 +13,17 @@ int arr[1000];
 	 star_rd++;
 	if(star_rd>=40) star_rd=0;
 	if(star_rd>=20) dut->addr_i=arr[star_rd-20];
-	else{
+	else if(star_rd>=10) {
 		 arr[star_rd]=rand();
-		 dut->addr_i=arr[star_rd];
-		 }
-//	dut->addr_i=arr[star_rd];		
-	dut->st_data_i=rand();
+		 dut->addr_i=arr[star_rd];		
+			}
+   else  {
+   		arr[star_rd]=1024+star_rd*16;
+   	    dut->addr_i=arr[star_rd];	
+   		}
+   if(star_rd>=30) 	dut->sw_i=rand();
+    else 	dut->sw_i=262143*(rand()%11);
+	dut->st_i=rand();
 	counter++;
 	dut->rst_ni = (sim_unit % 10000 == 0) ? 0 : 1;
 }
