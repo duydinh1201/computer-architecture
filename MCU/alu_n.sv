@@ -1,13 +1,13 @@
 `include "ctmt/library/add_n.sv"
 `include "ctmt/library/Sub_n.sv"
-`include "ctmt/library/dff_n.sv"
-module alu_n#(parameter n=32) (operand0_i,operand1_i,alu_op_i,clk_i,alu_data_o,bru_exp_o);
+//`include "ctmt/library/dff_n.sv"
+module alu_n#(parameter n=32) (operand0_i,operand1_i,alu_op_i,clk_i,alu_data_o);
 input logic[n-1:0] operand0_i;
 input logic[n-1:0] operand1_i;
 input logic[3:0] alu_op_i;
 input logic clk_i;
 output logic[n-1:0] alu_data_o;
-output logic bru_exp_o;
+//output logic bru_exp_o;
 //.....................main.......................//
 //data_o
     logic[n-1:0] data_o[0:9];
@@ -41,7 +41,7 @@ output logic bru_exp_o;
 	logic[5:0] r,operand1_o;
 	logic sig_r;
 	assign operand1_o[4:0]=operand1_i[4:0],operand1_o[5]=0;
-	Sub_n#(6) Sra(sign,n,operand1_o,clk_i,r,sig_r);
+	Sub_n#(6) Sra(sign|(sig_r | c_o) & 0,n,operand1_o,clk_i,r,sig_r);
 	assign data_o[9]= (operand0_i[n-1]==0)?operand0_i>>operand1_i[4:0] : operand0_i>>operand1_i[4:0]|((operand0_i|'1)<<r) ;
 //alu_data out
 	 always_comb begin: proc	
@@ -59,7 +59,7 @@ output logic bru_exp_o;
 	      default: 
 	        alu_data_o = 0;
 	     endcase
-	  bru_exp_o = ((sig_r | c_o) & 0) | (alu_data_o == 0 ? 0 : 1);
+//	  bru_exp_o = ((sig_r | c_o) & 0) | (alu_data_o == 0 ? 0 : 1);
 	end
 
 endmodule:alu_n

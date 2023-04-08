@@ -1,4 +1,4 @@
-`include "src/library/FA_1bit.sv"
+`include "ctmt/library/FA_1bit.sv"
 //`include "src/library/dff_n.sv"
 module add_n#(parameter n=8)(data0_i,data1_i,clk_i,sum_o,over_o);
 input logic [n-1:0] data0_i,data1_i;

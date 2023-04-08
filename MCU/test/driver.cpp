@@ -1,19 +1,51 @@
+#include <iostream>
+#include <string>
+#define MAX_SIM 50000
 
+int counter = 0;
+/*
+	addi x02, x0, 10     # Add immediate value 10 to register x02
+	sw x02, 4(x01)       # Store the value of register x02 into memory at address x01 + 4
+	lw x03, 4(x01)   # Load the value stored in memory at address x01 + 4 into register x03
+	lw x10, 0(x05)     # Load the value stored in memory at address x05 into register x10
+	blt x10, x03, add   # Branch to label 'add' if the value in x10 is less than the value in x03
+	j done             # Jump to label 'done' otherwise
 
+	add:
+	addi x10, x10, 1   # Add immediate value 1 to register x10
+	sw x10, 0(x05)     # Store the updated value of x10 into memory at address x05
+	j done             # Jump to label 'done'
+
+	done:
+*/
+void set_random(Vtop* dut, vluint64_t sim_unit) {
+    char hexString[] = "00a0011300a0011300a1202300a12883000a1063fea404630000006f001010930010209300a140230000006f0000006f"; // chuỗi hex
+   	int len = sizeof(hexString) / sizeof(hexString[0]);
+    char hex_arr[9]; // Kích thước của hex_arr cần phải là 9 để có chỗ lưu kí tự null ('\0').
+        strncpy(hex_arr, &hexString[counter*8], 8);
+        hex_arr[8] = '\0'; // Thêm kí tự null ('\0') vào cuối chuỗi.
+        dut->inst_do = std::stoul(hex_arr, nullptr, 16);
+        counter++;
+        if(counter==(len/8)) counter=0;
+   
+     dut->rst_ni = (sim_unit % 1000 == 0) ? 0 : 1;
+}
+
+/*
 int counter = 0;
 int star_rd=0;
 int  ena_star=0;
 int a=0;
-#define MAX_SIM 50000
+#define MAX_SIM 5000
 void set_random(Vtop* dut, vluint64_t sim_unit) {
-int arr[1000];
+int arr[500];
     if(counter%20) a=a;
     	else a=!a;
 	dut->st_en_i=a;
 	 star_rd++;
 	if(star_rd>=40) star_rd=0;
 	if(star_rd>=20) dut->addr_i=arr[star_rd-20];
-	else if(star_rd>=10) {
+	else if(star_rd>10) {
 		 arr[star_rd]=rand();
 		 dut->addr_i=arr[star_rd];		
 			}
@@ -21,11 +53,13 @@ int arr[1000];
    		arr[star_rd]=1024+star_rd*16;
    	    dut->addr_i=arr[star_rd];	
    		}
-   if(star_rd>=30) 	dut->sw_i=rand();
-    else 	dut->sw_i=262143*(rand()%11);
+   if(star_rd>30) 	
+   		dut->sw_i=rand();
+    else 	
+    	dut->sw_i=262143*(rand()%11);
 	dut->st_i=rand();
 	counter++;
-	dut->rst_ni = (sim_unit % 10000 == 0) ? 0 : 1;
+	dut->rst_ni = (sim_unit % 1000 == 0) ? 0 : 1;
 }
 /*
 //brcomp
@@ -38,7 +72,6 @@ void set_random(Vtop* dut, vluint64_t sim_unit) {
 	else 	dut->rs2_d_i=2952790015-rand()%4294967295;
 	if(sim_unit<=2000) dut->br_signed=0;
 	else	dut->br_signed=1;
-
 }
 
 

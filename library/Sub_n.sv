@@ -1,5 +1,5 @@
-`include "ctmt/library/FA_1bit.sv"
-`include "ctmt/library/dff_n.sv"
+//`include "ctmt/library/FA_1bit.sv"
+//`include "ctmt/library/dff_n.sv"
 
 module Sub_n#(parameter n=8)(sign_i,data0_i,data1_i,clk_i,data_o,over_o);
 input logic [n-1:0] data0_i,data1_i;

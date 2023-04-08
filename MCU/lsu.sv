@@ -1,5 +1,6 @@
 `include "ctmt/MCU/DMEM.sv"
 `include "ctmt/library/mux256to1_n.sv"
+`include "ctmt/library/dff_n_data.sv"
 module lsu#(parameter n=32,address=12)(clk_i,rst_ni,addr_i,st_i,st_en_i,sw_i,ld_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o);
   input logic clk_i;
   input logic rst_ni;
@@ -17,8 +18,8 @@ module lsu#(parameter n=32,address=12)(clk_i,rst_ni,addr_i,st_i,st_en_i,sw_i,ld_
 //dmem
 logic en_st_dmem;
 	//neu dia chi be hon 0x3ff,store vao dmem
-	assign en_st_dmem=(addr_i[address-1:10]==0)?st_en_i:0;
-	DMEM#(32,10) dmem(clk_i,rst_ni,addr_i[9:0],st_i,en_st_dmem,ld_o);
+	assign en_st_dmem=(addr_i[address-1:8]==0)?st_en_i:0;
+	DMEM#(32,8) dmem(clk_i,rst_ni,addr_i[7:0],st_i,en_st_dmem,ld_o);
 //peripherals
  	parameter x=256;
 	//decoder  
@@ -41,9 +42,9 @@ logic en_st_dmem;
 	genvar a;
 		generate
 		   for (a = 0; a <= x; a++) begin
-		     dff_n_data#(n,0) Reg((a==256)?sw_i:st_data_o[a],//256(=0x500-0x3ff),la dia chi cua sw_i: 0x500,
-		     					  (a<170 && a%16 == 0)?rst_no:rst_ni,                    //reset register
-		     					  (a==256 && st_en_i==0)?clk_i:clk_i & ena_addr_o[a] & st_en_i,//clk register
+		     dff_n_data#(n,0) Reg((a==256)? sw_i : st_data_o[a],//256(=0x500-0x3ff),la dia chi cua sw_i: 0x500,
+		     					  (a<170 && a%16 == 0)? rst_no : rst_ni, //reset register
+		     					  (a==256 && st_en_i==0)? clk_i : clk_i & ena_addr_o[a] & st_en_i,//clk register
 		     					  ld_data_i[a]);	//ld_data_i[256] la gia tri cua sw_i
 		   end
 	   endgenerate

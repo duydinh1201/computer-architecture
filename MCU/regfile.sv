@@ -1,9 +1,9 @@
-`include "ctmt/library/dff_n_data.sv"
+//`include "ctmt/library/dff_n_data.sv"
 //`include "ctmt/library/dff_n.sv"
-`include "ctmt/library/mux32to1_n.sv"
-module regfile#(parameter n=32,address=5,m=32) (
+//`include "ctmt/library/mux32to1_n.sv"
+module regfile#(parameter n=32,address=5) (
 	input logic[n-1:0] rd_data_i,
-	input logic rd_wr_i,
+	input logic rd_wr_i,//=1 is write
 	input logic rst_i,
 	input logic clk_i,
 	input logic[address-1:0] rd_addr_i,
@@ -13,6 +13,7 @@ module regfile#(parameter n=32,address=5,m=32) (
 	output logic[n-1:0] rs2_data_o
 );
 //....................main...............//
+parameter m=2**address;
 //dong bo nho vao
 logic[n-1:0] rs_data_o[0:m-1],rs_data_i[0:m-1];
 logic[n-1:0]    ena_addr_o;

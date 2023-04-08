@@ -1,3 +1,22 @@
+module top#(parameter n=32)(io_sw_i,inst_do,io_lcd_o,io_ledg_o,io_ledr_o,io_hex0_o,io_hex1_o,io_hex2_o,io_hex3_o,io_hex4_o,io_hex5_o,io_hex6_o,io_hex7_o,clk_i,rst_ni);
+input logic[n-1:0] io_sw_i;
+	input logic[n-1:0] inst_do;
+output logic [n-1:0] io_lcd_o;
+output logic[n-1:0] io_ledg_o;
+output logic[n-1:0] io_ledr_o;
+output logic[n-1:0] io_hex0_o;
+output logic[n-1:0] io_hex1_o;
+output logic[n-1:0] io_hex2_o;
+output logic[n-1:0] io_hex3_o;
+output logic[n-1:0] io_hex4_o;
+output logic[n-1:0] io_hex5_o;
+output logic[n-1:0] io_hex6_o;
+output logic[n-1:0] io_hex7_o;
+input logic clk_i;
+input logic rst_ni;
+single_cycle#(n) dut(io_sw_i,inst_do,io_lcd_o,io_ledg_o,io_ledr_o,io_hex0_o,io_hex1_o,io_hex2_o,io_hex3_o,io_hex4_o,io_hex5_o,io_hex6_o,io_hex7_o,clk_i,rst_ni);
+endmodule:top
+/*
 //lsu
 module top#(parameter n=32,address=12)(clk_i,rst_ni,addr_i,st_i,st_en_i,sw_i,ld_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o);
   input logic clk_i;
@@ -67,17 +86,17 @@ endmodule:top
 /*
 //bo so sanh
 /*
-module top#(parameter n=32)(
-	input logic[n-1:0] rs1_d_i,
-	input logic[n-1:0] rs2_d_i,
-	input logic br_signed, //=0 unsigned
-	input logic clk_i,	
-	output logic br_less_o,
-	output logic br_equal_o
+module top#(parameter n = 31)(
+	input logic [n:0]rs1_data_i,
+	input logic [n:0]rs2_data_i,
+	input logic br_unsigned,
+	input logic clk_i,
+	output logic br_less,
+	output logic br_equal
 );
-brcomp#(n) dut(rs1_d_i,rs2_d_i,br_signed,clk_i,br_less_o,br_equal_o);
+brcomp#(n) dut(rs1_data_i,rs2_data_i,br_unsigned,clk_i,br_less,br_equal);
 endmodule:top 
-//*
+/*
 //decoder
 module top#(parameter n=32) (instr_i,clk_i,rs1_addr_o,rs2_addr_o,rd_addr_o,imm_o,alu_op_o,operand_b_sel_o,operand_a_sel_o,is_B_o,is_J_o,is_load_o,is_U_o,is_I_o,is_S_o,is_R_o);
     input  logic [n-1:0] instr_i;

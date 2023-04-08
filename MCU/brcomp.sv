@@ -1,4 +1,4 @@
-`include "ctmt/library/Sub_n.sv"
+//`include "ctmt/library/Sub_n.sv"
 module brcomp#(parameter n=32)(
 	input logic[n-1:0] rs1_d_i,
 	input logic[n-1:0] rs2_d_i,

@@ -1,8 +1,8 @@
 module brcomp #(parameter n = 31)(
-	input logic clk_i,
 	input logic [n:0]rs1_data_i,
 	input logic [n:0]rs2_data_i,
 	input logic br_unsigned,
+	input logic clk_i,
 	output logic br_less,
 	output logic br_equal
 );
