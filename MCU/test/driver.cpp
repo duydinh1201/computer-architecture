@@ -4,22 +4,20 @@
 
 int counter = 0;
 /*
-	addi x02, x0, 10     # Add immediate value 10 to register x02
-	sw x02, 4(x01)       # Store the value of register x02 into memory at address x01 + 4
-	lw x03, 4(x01)   # Load the value stored in memory at address x01 + 4 into register x03
-	lw x10, 0(x05)     # Load the value stored in memory at address x05 into register x10
-	blt x10, x03, add   # Branch to label 'add' if the value in x10 is less than the value in x03
-	j done             # Jump to label 'done' otherwise
+	addi x02, x0, 10 # Add immediate value 10 to register x02
+	sw x02, 4(x01) # Store the value of register x02 into memory at address x01 + 4
+	lw x03, 4(x01) # Load the value stored in memory at address x01 + 4 into register x03
+	lw x10, 0(x05) # Load the value stored in memory at address x05 into register x10
+	bge x10, x03, done # If x10 >= x03, jump to 'done' label
+	add x10, x10, x03 # 
+	sw x10, 0(x05) # Store the updated value of x10 into memory at address x05
+	addi x06, x0, loop # Load the address of 'loop' label into register x06
+	jalr x0, x06, 0 # Jump to the address in register x06 (the 'loop' label) and repeat the loop
 
-	add:
-	addi x10, x10, 1   # Add immediate value 1 to register x10
-	sw x10, 0(x05)     # Store the updated value of x10 into memory at address x05
-	j done             # Jump to label 'done'
-
-	done:
+done:
 */
 void set_random(Vtop* dut, vluint64_t sim_unit) {
-    char hexString[] = "00a0011300a0011300a1202300a12883000a1063fea404630000006f001010930010209300a140230000006f0000006f"; // chuỗi hex
+    char hexString[] = "00a0011300a00113002082230040a18300028503003557e30035053300a022a300f005e7"; // chuỗi hex
    	int len = sizeof(hexString) / sizeof(hexString[0]);
     char hex_arr[9]; // Kích thước của hex_arr cần phải là 9 để có chỗ lưu kí tự null ('\0').
         strncpy(hex_arr, &hexString[counter*8], 8);

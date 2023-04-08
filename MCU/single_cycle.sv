@@ -54,10 +54,10 @@ parameter n_lsu=12;//so bit dia chi lsu
 	//is_load,jalr
 	logic[n-1:0] rs1_d_reg,rs2_d_reg,rd_d_i;
 	logic en_wr_reg;
-	
+	////////////////////////////
 	assign rd_d_i=(is_load==1)? ld_lsu : ((jalr|J_fmt)==1)? (pc_o+4) : (LUI==1)? imm_o : alu_data_o;
 	assign en_wr_reg=~(B_fmt|S_fmt);//cho phep ghi khi khong phai B_fmt va S_fmt
-	
+	///////////////////////////
 	regfile#(n,n_reg) REGFILE(
 			rd_d_i,en_wr_reg,rst_ni,~clk_i,rd_addr_o,
 			rs1_addr_o,rs2_addr_o,rs1_d_reg,rs2_d_reg
@@ -69,21 +69,25 @@ parameter n_lsu=12;//so bit dia chi lsu
 	);
 //ALU
 	logic[n-1:0] alu_d2,alu_d1,alu_data_o;
+	/////////////ALU condition///////////
 	assign alu_d1=((en_jump_br | J_fmt | APIPC)==1)? pc_o : rs1_d_reg;
-	assign alu_d2=(operand_b_sel_o==1)? rs2_d_reg : imm_o;
+	assign alu_d2=(operand_b_sel_o==0)? rs2_d_reg : imm_o;
+	///////////////////////
 	alu_n#(n) ALU(
-		alu_d1,alu_d2,(B_fmt==1)?0:alu_op_o,clk_i,alu_data_o
+		alu_d1,alu_d2,((B_fmt|is_load|S_fmt)==1)?0:alu_op_o,clk_i,alu_data_o
 	);
 //LSU
-	logic[n_lsu-1:0] st_addr;
+	logic[n_lsu-1:0] addr_lsu;
 	logic[n-1:0] ld_lsu,ld_lsu_o,st_d,io_hex_o[0:7];
 	logic en_st;
+	////////////////////
 	assign en_st=S_fmt;
-	assign st_addr=alu_data_o[n_lsu-1:0];
+	assign addr_lsu=alu_data_o[n_lsu-1:0];
+	/////////////////////
 	store_ctl#(n) STORE_DATA(rs2_d_reg,alu_op_o,st_d);
 	
 	lsu#(n,n_lsu)  LSU(
-		clk_i,rst_ni,st_addr,st_d,en_st,io_sw_i,ld_lsu_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o
+		clk_i,rst_ni,addr_lsu,st_d,en_st,io_sw_i,ld_lsu_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o
 	);
 	
 	load_ctl#(n) LOAD_DATA(ld_lsu_o,alu_op_o,ld_lsu);

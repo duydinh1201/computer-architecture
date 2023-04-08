@@ -69,7 +69,7 @@ always_comb begin:Alu_op
 	end
 //operand_b_sel_o
 	assign   is_load_o=(opcode==0)?1:0;
-	assign  operand_b_sel_o=~(is_S_o|is_B_o|is_R_o|I_imm);//=0 chon rs2,=1 chon imm
+	assign  operand_b_sel_o=~(is_R_o|I_imm);//=0 chon rs2,=1 chon imm
 /*
 //operand_a_sel_o
 	assign	operand_a_sel_o=is_U_o|is_J_o;//=0 chon rs1,=1 chon imm
