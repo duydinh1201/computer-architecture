@@ -1,5 +1,5 @@
-//`include "ctmt/library/mux128to1_n.sv"
-//`include "ctmt/library/dff_n_data.sv"
+`include "ctmt/library/mux128to1_n.sv"
+`include "ctmt/library/dff_n_data.sv"
 module DMEM#(parameter n=32,address=10)
 (
   input logic clk_i,

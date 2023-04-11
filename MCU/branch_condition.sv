@@ -1,4 +1,4 @@
-`include "ctmt/MCU/brcomp.sv"
+//`include "ctmt/MCU/brcomp.sv"
 module branch_condition#(parameter n=32) (is_branch,data1_i,data2_i,opcode_i,clk_i,en_jump);
 input logic[n-1:0] data1_i,data2_i;
 input logic clk_i;
@@ -9,6 +9,8 @@ output logic en_jump;
 	logic br_signed,br_less,br_equal;
 	assign br_signed=(opcode_i==6 || opcode_i==7)?0:1;
 	brcomp#(n) BRCOMP(data1_i,data2_i,br_signed,clk_i,br_less,br_equal);
+	//data1_i<data2_i:br_less=1
+	//data1_i=data2_i:br_equal=1
 	always_comb begin:proc
 	if(is_branch)
 		case(opcode_i)

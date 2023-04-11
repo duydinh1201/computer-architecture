@@ -1,7 +1,11 @@
 `include "ctmt/library/dff_n.sv"
-`include "ctmt/MCU/lsu.sv"
+`include "ctmt/library/dff_n_data.sv"
+`include "ctmt/library/mux128to1_n.sv"
+`include "ctmt/MCU/lsu_new.sv"
+`include "ctmt/MCU/dmem_new.sv"
 `include "ctmt/MCU/alu_n.sv"
 `include "ctmt/MCU/branch_condition.sv"
+`include "ctmt/MCU/brcomp.sv"
 `include "ctmt/MCU/decoder.sv"
 `include "ctmt/MCU/regfile.sv"
 `include "ctmt/MCU/load_ctl.sv"
@@ -40,7 +44,7 @@ parameter n_lsu=12;//so bit dia chi lsu
 //IMEM
 	logic[n-1:0] inst_do;
 	inst_memory#(n_addr) INST(pc_o[n_addr-1:0],inst_do,clk_i,rst_ni);*/
-//DECODER
+/////////////////DECODER////////////////////////
 	logic	operand_b_sel_o,B_fmt,J_fmt,is_load,LUI,APIPC,jalr,S_fmt;
 	logic[3:0] alu_op_o;
 	logic[n-1:0] imm_o;
@@ -50,47 +54,44 @@ parameter n_lsu=12;//so bit dia chi lsu
 			operand_b_sel_o,B_fmt,J_fmt,is_load,LUI,APIPC,jalr,S_fmt
 			);
 
-//REGFILE	
+//////////////////REGFILE///////////////////////	
 	//is_load,jalr
 	logic[n-1:0] rs1_d_reg,rs2_d_reg,rd_d_i;
 	logic en_wr_reg;
 	////////////////////////////
-	assign rd_d_i=(is_load==1)? ld_lsu : ((jalr|J_fmt)==1)? (pc_o+4) : (LUI==1)? imm_o : alu_data_o;
+	assign rd_d_i=(is_load==1)? ld_lsu_o : ((jalr|J_fmt)==1)? (pc_o+4) : (LUI==1)? imm_o : alu_data_o;
 	assign en_wr_reg=~(B_fmt|S_fmt);//cho phep ghi khi khong phai B_fmt va S_fmt
 	///////////////////////////
 	regfile#(n,n_reg) REGFILE(
 			rd_d_i,en_wr_reg,rst_ni,~clk_i,rd_addr_o,
 			rs1_addr_o,rs2_addr_o,rs1_d_reg,rs2_d_reg
 		);
-//BRANCH
+///////////////////BRANCH/////////////////////
 	logic en_jump_br;	
 	branch_condition#(n) ENA_JUMP_BR(
 		B_fmt,rs1_d_reg,rs2_d_reg,alu_op_o[2:0],clk_i,en_jump_br
 	);
-//ALU
+////////////////////ALU///////////////////////
 	logic[n-1:0] alu_d2,alu_d1,alu_data_o;
-	/////////////ALU condition///////////
+	//ALU condition
 	assign alu_d1=((en_jump_br | J_fmt | APIPC)==1)? pc_o : rs1_d_reg;
 	assign alu_d2=(operand_b_sel_o==0)? rs2_d_reg : imm_o;
 	///////////////////////
 	alu_n#(n) ALU(
 		alu_d1,alu_d2,((B_fmt|is_load|S_fmt)==1)?0:alu_op_o,clk_i,alu_data_o
 	);
-//LSU
+////////////////////LSU////////////////////////////
 	logic[n_lsu-1:0] addr_lsu;
-	logic[n-1:0] ld_lsu,ld_lsu_o,st_d,io_hex_o[0:7];
+	logic[n-1:0]  st_lsu,ld_lsu_o,io_hex_o[0:7];
 	logic en_st;
 	////////////////////
-	assign en_st=S_fmt;
-	assign addr_lsu=alu_data_o[n_lsu-1:0];
-	/////////////////////
-	store_ctl#(n) STORE_DATA(rs2_d_reg,alu_op_o,st_d);
-	
-	lsu#(n,n_lsu)  LSU(
-		clk_i,rst_ni,addr_lsu,st_d,en_st,io_sw_i,ld_lsu_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o
+	assign st_lsu=rs2_d_reg;
+	assign en_st=S_fmt;					 
+	assign addr_lsu=alu_data_o[n_lsu-1:0];//=rs1+imm
+	/////////////////////	
+	lsu_new#(n,n_lsu)  LSU(
+		alu_op_o,clk_i,rst_ni,addr_lsu,st_lsu,en_st,io_sw_i,ld_lsu_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o
 	);
-	
-	load_ctl#(n) LOAD_DATA(ld_lsu_o,alu_op_o,ld_lsu);
 	assign io_hex7_o=io_hex_o[7];
 	assign io_hex6_o=io_hex_o[6];
 	assign io_hex5_o=io_hex_o[5];

@@ -2,6 +2,7 @@
 `include "ctmt/library/mux256to1_n.sv"
 `include "ctmt/library/dff_n_data.sv"
 module lsu#(parameter n=32,address=12)(clk_i,rst_ni,addr_i,st_i,st_en_i,sw_i,ld_o,io_lcd_o,io_ledg_o,io_ledr_o,io_hex_o);
+ //input logic op_load;
   input logic clk_i;
   input logic rst_ni;
   input logic [address-1:0] addr_i;
